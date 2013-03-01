@@ -1,0 +1,9 @@
+#include<stdio.h>
+int main()
+{
+	char str[] = {"shila\tis\ta\tgood\tboy"};
+	char s1[40],s2[40];
+	sscanf(str,"%s\t%s\n",s1,s2);
+	printf("%s %s %s\n",str,s1,s2);
+	return 0;
+	}

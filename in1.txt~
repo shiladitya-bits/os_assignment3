@@ -1,0 +1,7 @@
+6
+ls	-	/bin	-l -a
+echo	-	-	hello world
+pwd	echo	/bin	NULL
+cat	ls	/bin	in1.txt
+ifconfig ls 	/sbin	NULL
+who	pwd	-	-d -l

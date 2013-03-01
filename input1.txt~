@@ -1,0 +1,26 @@
+7
+ls	-	/bin	/home/assign3/ -l -a -x
+ps	ls	/bin	-e -ax 
+echo	-	-	hello
+pwd	echo	/bin	NULL
+who	pwd	-	-d
+ifconfig ls 	/sbin	NULL
+cat	ls	/bin	pracex.c
+
+This is just a sample input which will create the following 2-D arrays.
+
+arrA :  
+
+ls	/bin	-l -a -x
+ps	/bin	-e ax 
+cat	-	input1.txt
+ifconfig/sbin	NULL
+	
+arrB :  
+
+echo	-	hello
+pwd	/bin	NULL
+who	-	-d
+	
+Please use your own input file that will be generic. This file is given for your reference.
+Please do not hardcode according to this file.

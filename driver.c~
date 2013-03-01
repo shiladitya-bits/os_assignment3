@@ -1,0 +1,76 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include "header.h"
+int main(int argc,char *argv[])
+{
+	int i,j,len,p1=0,p2=0,flag=0;
+	char *filename = argv[1];
+	FILE *fp;
+	fp = fopen(filename,"r");
+	fscanf(fp,"%d",&len);
+	char **A,**B;
+	A = (char **)malloc(len*sizeof(char *));
+	B = (char **)malloc(len*sizeof(char *));
+	for(i=0;i<len;i++)
+	{
+		A[i] = (char *)malloc(80*sizeof(char));
+		B[i] = (char *)malloc(80*sizeof(char));
+		
+	}
+	char command[50],depend[50],env[50],option[50],fullcom[80],tmp[50];
+	for(i=0;i<len;i++)
+	{
+		flag = 0;
+		fscanf(fp,"%s",command);
+		fscanf(fp,"%s",depend);
+		fscanf(fp,"%s",env);
+		fscanf(fp,"\t%[^\n]s",option);
+		if(strcmp(option,"-") == 0)
+		{
+			strcpy(option,"");
+		}
+		int dep = strcmp(depend,"-");
+		strcpy(fullcom,command);
+		strcat(fullcom,"\t");
+		strcat(fullcom,env);
+		strcat(fullcom,"\t");
+		strcat(fullcom,option);		
+		if( dep == 0)
+		{
+			if(p1<=p2)
+			{
+				strcpy(A[p1],fullcom);
+				p1++;
+			}
+			else
+			{
+				strcpy(B[p2], fullcom);
+				p2++;
+			}
+				
+		}
+		else
+		{
+			for(j=0;j<p1;j++)
+			{
+				sscanf(A[j],"%s",tmp);	
+				if( strcmp(tmp,depend) == 0 )
+				{
+					flag = 1;
+					strcpy(A[p1],fullcom);
+					p1++;
+					break;
+				}
+			}
+			if(!flag)
+			{
+				strcpy(B[p2],fullcom);
+				p2++;			
+			}	
+		}
+	}
+	fclose(fp);
+	executecmds(A,B,p1,p2);
+	return 0;
+}

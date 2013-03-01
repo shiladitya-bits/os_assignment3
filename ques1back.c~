@@ -1,0 +1,184 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<errno.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<string.h>
+int main(int argc,char *argv[])
+{
+	int i,j,len,p1=0,p2=0,flag=0;
+	char *filename = argv[1];
+	FILE *fp;
+	fp = fopen(filename,"r");
+	fscanf(fp,"%d",&len);
+	char A[10][80],B[10][80];
+	char command[50],depend[50],env[50],option[50],fullcom[80],tmp[50];
+	for(i=0;i<len;i++)
+	{
+		flag = 0;
+		fscanf(fp,"%s",command);
+		fscanf(fp,"%s",depend);
+		fscanf(fp,"%s",env);
+		fscanf(fp,"\t%[^\n]s",option);
+		/*if(strcmp(env,"-") == 0)
+		{
+			strcpy(env,"/bin/:/sbin/:/etc/:/home/usr");
+		}*/
+		if(strcmp(option,"-") == 0)
+		{
+			strcpy(option,"");
+		}
+		int dep = strcmp(depend,"-");
+		strcpy(fullcom,command);
+		strcat(fullcom,"\t");
+		strcat(fullcom,env);
+		strcat(fullcom,"\t");
+		strcat(fullcom,option);		
+		if( dep == 0)
+		{
+			if(p1<=p2)
+			{
+				strcpy(A[p1],fullcom);
+				p1++;
+			}
+			else
+			{
+				strcpy(B[p2], fullcom);
+				p2++;
+			}
+				
+		}
+		else
+		{
+			for(j=0;j<p1;j++)
+			{
+				sscanf(A[j],"%s",tmp);	
+				if( strcmp(tmp,depend) == 0 )
+				{
+					flag = 1;
+					strcpy(A[p1],fullcom);
+					p1++;
+					break;
+				}
+			}
+			if(!flag)
+			{
+				strcpy(B[p2],fullcom);
+				p2++;			
+			}	
+		}
+	}
+	fclose(fp);
+	printf("end of loop. will print content of arrays now.\n");
+	printf("array A:\n");
+	for(i=0;i<p1;i++)
+		printf("%s\n",A[i]);
+	printf("array B:\n");
+	for(i=0;i<p2;i++)
+		printf("%s\n",B[i]);
+	pid_t childA,childB,cmd1,cmd2;
+	i=0;
+	printf("forking now\n");
+	childA = fork();
+	if(!childA)
+	{
+		while(i!=p1)
+		{
+			char env1[40] = "/bin/",env2[40] = "/sbin/",env3[40]="/usr/bin/",env4[40]="/usr/sbin/",env5[40]="/etc/";
+			sscanf(A[i],"%s\t%s\t%[^\n]s",command,env,option);
+			if(strcmp(env,"-") != 0)
+			{
+				strcat(env,"/");
+				strcat(env,command);
+			}
+			else
+			{
+				strcat(env1,command);
+				strcat(env2,command);
+				strcat(env3,command);
+				strcat(env4,command);
+				strcat(env5,command);
+			}
+			char *args[2] = {option,NULL};
+			i++;
+			cmd1 = fork();
+			if(!cmd1)
+			{
+				printf("-----------------executing command in array A at position %d-------------\n",i);
+				printf("path=%s args=%s\n",env,args[0]);			
+				
+				if(strcmp(env,"-") == 0)
+				{
+						printf("-------%s %s----------\n",env1,args[0]);
+					execv(env1,args); 
+					execv(env2,args); 
+					execv(env3,args);
+					execv(env4,args); 
+					execv(env5,args); 
+				}			
+
+				if(execv(env,args)==-1) 
+					printf("execv call failed at i=%d\n",i);				
+				exit(0);
+			}
+			else wait(NULL);
+		}
+		exit(0);
+	}
+	else if(childA)
+	{
+		childB = fork();
+		if(!childB)
+		{
+			while(i!=p2)
+			{
+				char env1[40] = "/bin/",env2[40] = "/sbin/",env3[40]="/usr/bin/",env4[40]="/usr/sbin/",env5[40]="/etc/";
+		
+				sscanf(B[i],"%s\t%s\t%[^\n]s",command,env,option);
+				if(strcmp(env,"-") != 0)
+				{
+					strcat(env,"/");
+					strcat(env,command);
+				}
+				else
+				{
+					strcat(env1,command);
+					strcat(env2,command);
+					strcat(env3,command);
+					strcat(env4,command);
+					strcat(env5,command);
+				}
+				char *args[2] = {option,NULL};
+				i++;
+				cmd2 = fork();
+				if(!cmd2)
+				{
+					printf("-----------executing command in array B at position %d-------------\n",i);
+					printf("path=%s args=%s\n",env,args[0]);			
+					if(strcmp(env,"-") == 0)
+					{
+					
+						printf("-------%s %s----------\n",env1,args[0]);
+						execv(env1,args); 
+						execv(env2,args); 
+						execv(env3,args);
+						execv(env4,args); 
+						execv(env5,args); 
+					}			
+		
+					if(execv(env,args)==-1) 
+						printf("execv call failed at i=%d!\n",i);
+					exit(0);
+				}
+				else wait(NULL);
+			}
+			exit(0);
+		}
+	}
+	
+	wait(NULL);
+	wait(NULL);	
+	printf("completed executing all commands\n");	
+	return 0;
+}

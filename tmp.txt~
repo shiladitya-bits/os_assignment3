@@ -1,0 +1,20 @@
+if(strcmp(args[0],"hello") == 0)
+				{
+					char *env1 = "/bin/",*env2 = "/sbin/",*env3="/usr/bin",*env4="/usr/sbin",*env5="/etc/";
+					strcat(env1,command);
+					strcat(env2,command);
+					strcat(env3,command);
+					strcat(env4,command);
+					strcat(env5,command);
+					if(execv(env1,args)==-1) 
+					printf("execv1 call failed at i=%d!\n",i);
+					if(execv(env2,args)==-1) 
+					printf("execv2 call failed at i=%d!\n",i);
+					if(execv(env3,args)==-1) 
+					printf("execv3 call failed at i=%d!\n",i);
+					if(execv(env4,args)==-1) 
+					printf("execv4 call failed at i=%d!\n",i);
+					if(execv(env5,args)==-1) 
+					printf("execv5 call failed at i=%d!\n",i);
+				}			
+				

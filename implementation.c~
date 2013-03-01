@@ -1,0 +1,44 @@
+#include "header.h"
+void executecmds(char **A,char **B,int p1,int p2)
+{
+	int i;
+
+	printf("array A:\n");
+	for(i=0;i<p1;i++)
+		printf("%s\n",A[i]);
+	printf("array B:\n");
+	for(i=0;i<p2;i++)
+		printf("%s\n",B[i]);
+	
+	pid_t childA,childB,cmd1,cmd2;
+	i=0;
+	childA = fork();
+	if(!childA)
+	{
+		while(i!=p1)
+		{
+			executesingle(A,i);
+			sleep(1);
+			i++;
+		}
+		exit(0);
+	}
+	else if(childA)
+	{
+		childB = fork();
+		if(!childB)
+		{
+			while(i!=p2)
+			{
+				executesingle(B,i);
+				sleep(1);
+				i++;
+			}
+			exit(0);
+		}
+	}
+	
+	wait(NULL);
+	wait(NULL);	
+}
+
